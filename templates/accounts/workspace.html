@@ -2,102 +2,116 @@
 {% load static %}
 
 {% block title %}{{ role_display }} — Nissin Procurement{% endblock %}
+{% block body_class %}{% endblock %}
 
 {% block body %}
-<div class="app-shell">
-    <!-- Sidebar -->
-    <aside class="app-sidebar" id="sidebar" role="navigation" aria-label="Main navigation">
-        <div class="sidebar-header">
-            <h2>Nissin Procurement</h2>
-            <span class="sidebar-subtitle">Indirect Material System</span>
+<div class="workspace">
+    <!-- Left Sidebar -->
+    <aside class="sidebar" role="navigation" aria-label="Main navigation">
+        <div class="identity">
+            <div class="mark-wrapper">
+                <img src="{% static 'images/nissin-workspace-mark.svg' %}" alt="" class="mark-img" width="35" height="35">
+            </div>
+            <div class="brand-text">
+                NISSIN<span>INDIRECT MATERIALS</span>
+            </div>
         </div>
 
-        <nav class="sidebar-nav">
-            <div class="nav-section-title">Navigation</div>
-            <a href="{% url 'accounts:home' %}" class="nav-link">
-                <span class="nav-icon">🏠</span>
-                Home
+        <div class="sidebar-section">Workspace</div>
+        <nav class="nav-wrap" aria-label="Workspace navigation">
+            <a href="{% url 'accounts:home' %}" class="nav-btn">
+                <span class="nav-icon" aria-hidden="true">&#9638;</span>
+                Overview
             </a>
-
-            <div class="nav-section-title">Current Workspace</div>
-            <a href="{% url 'accounts:workspace' role_slug %}" class="nav-link active">
-                <span class="nav-icon">📋</span>
+            <a href="{% url 'accounts:workspace' role_slug %}" class="nav-btn active" aria-current="page">
+                <span class="nav-icon" aria-hidden="true">&#9671;</span>
                 {{ role_display }}
             </a>
+        </nav>
 
-            <div class="nav-section-title">Account</div>
-            <a href="{% url 'accounts:password_change' %}" class="nav-link">
-                <span class="nav-icon">🔑</span>
+        <div class="sidebar-section">Account</div>
+        <nav class="nav-wrap" aria-label="Account navigation">
+            <a href="{% url 'accounts:password_change' %}" class="nav-btn">
+                <span class="nav-icon" aria-hidden="true">&#9675;</span>
                 Change Password
             </a>
         </nav>
 
-        <div class="sidebar-footer">
-            <div class="sidebar-actions">
-                <a href="{% url 'accounts:home' %}" class="sidebar-action-link">Home</a>
-                <form method="post" action="{% url 'accounts:logout' %}" style="flex:1;display:flex;">
-                    {% csrf_token %}
-                    <button type="submit" class="sidebar-action-link" style="width:100%;color:#fc8181;">
-                        Sign Out
-                    </button>
-                </form>
-            </div>
+        <div class="sidebar-bottom">
+            <form method="post" action="{% url 'accounts:logout' %}" class="sidebar-logout-form">
+                {% csrf_token %}
+                <button type="submit" class="logout-btn">
+                    &#8618; Sign Out
+                </button>
+            </form>
         </div>
     </aside>
 
-    <!-- Mobile overlay -->
-    <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
-
-    <!-- Main content -->
-    <div class="app-main">
-        <header class="app-topbar">
-            <button class="mobile-menu-btn" onclick="toggleSidebar()" aria-label="Toggle menu">
-                ☰
-            </button>
-            <span class="topbar-title">{{ role_display }}</span>
-            <div></div>
+    <!-- Main Workspace Area -->
+    <div class="main">
+        <header class="topbar">
+            <div class="crumb">
+                Workspace <span aria-hidden="true"> / </span> <strong>{{ role_display }}</strong>
+            </div>
+            <div class="top-right">
+                <span class="role-pill">{{ role_display }}</span>
+            </div>
         </header>
 
-        <main id="main-content" class="app-content">
-            <div class="workspace-header">
-                <h1>{{ role_display }}</h1>
-                <p>{{ role_description }}</p>
-            </div>
-
-            <div class="workspace-status">
-                <strong>Current Phase Status:</strong> {{ phase_status }}
-            </div>
-
-            <div class="card" style="margin-top:1.5rem;">
-                <div class="card-body">
-                    <div class="empty-state">
-                        <div class="empty-icon">🚧</div>
-                        <h3>Future Module</h3>
-                        <p>
-                            This workspace is a placeholder for future operational
-                            functionality. No procurement, inventory, or approval
-                            actions are available in this phase.
-                        </p>
-                        <a href="{% url 'accounts:home' %}" class="btn btn-secondary btn-sm" style="margin-top:1rem;">
-                            ← Back to Home
-                        </a>
-                    </div>
+        <main class="page" id="main-content" tabindex="-1">
+            <div class="pagehead">
+                <div>
+                    <div class="smallcap">Operational Workspace</div>
+                    <h1>{{ role_display }}</h1>
+                    <p>{{ role_description }}</p>
+                </div>
+                <div class="actions">
+                    <a href="{% url 'accounts:home' %}" class="button secondary">
+                        &larr; Back to Overview
+                    </a>
                 </div>
             </div>
+
+            <!-- Status Banner -->
+            <div class="summary">
+                <div class="summary-icon" aria-hidden="true">&#9671;</div>
+                <div>
+                    <strong>Module Status: {{ phase_status }}</strong>
+                    <p>
+                        This workspace is guarded by server-side permission checks.
+                        Live workflow actions for indirect materials will be activated in subsequent phases.
+                    </p>
+                </div>
+            </div>
+
+            <section class="panel">
+                <div class="panel-head">
+                    <div>
+                        <h2>Module Overview</h2>
+                        <p>Phase 1 Foundation</p>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <div class="placeholder">
+                        <div class="symbol" aria-hidden="true">&#9670;</div>
+                        <h2>Future Operational Module</h2>
+                        <p>
+                            Workflows for this role (material requests, supplier quotes, purchase orders,
+                            receiving, or stock issuance) are scheduled for subsequent implementation phases.
+                            No simulated transactions or fake approvals are displayed.
+                        </p>
+                        <div style="margin-top:20px;">
+                            <a href="{% url 'accounts:home' %}" class="button primary">
+                                Return to Overview
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-foot">
+                    Indirect materials only. No direct material or production workflows.
+                </div>
+            </section>
         </main>
     </div>
 </div>
-{% endblock %}
-
-{% block extra_js %}
-<script>
-function toggleSidebar() {
-    document.getElementById('sidebar').classList.toggle('open');
-    document.getElementById('sidebarOverlay').classList.toggle('active');
-}
-function closeSidebar() {
-    document.getElementById('sidebar').classList.remove('open');
-    document.getElementById('sidebarOverlay').classList.remove('active');
-}
-</script>
 {% endblock %}

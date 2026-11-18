@@ -155,3 +155,31 @@ class AuditTrailTests(TestCase):
         self.assertIsNotNone(failed_log)
         # Verify raw password is not leaked in detail text
         self.assertNotIn('bad_password_to_never_store', failed_log.detail)
+
+
+class VisualAndAccessibilityTests(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.password = "StrongPass123!"
+        self.user = User.objects.create_user(
+            username="ui_tester",
+            password=self.password
+        )
+
+    def test_login_page_renders_logo_and_split_screen(self):
+        response = self.client.get(reverse('accounts:login'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "nissin-workspace-mark.svg")
+        self.assertContains(response, "login-shell")
+        self.assertContains(response, "login-aside")
+        self.assertContains(response, "showPassword")
+        self.assertContains(response, "skip-link")
+
+    def test_authenticated_home_renders_workspace_branding(self):
+        self.client.login(username='ui_tester', password=self.password)
+        response = self.client.get(reverse('accounts:home'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "nissin-workspace-mark.svg")
+        self.assertContains(response, "sidebar")
+        self.assertContains(response, "topbar")
+

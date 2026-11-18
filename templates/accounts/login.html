@@ -2,94 +2,128 @@
 {% load static %}
 
 {% block title %}Sign In — Nissin Procurement{% endblock %}
-{% block body_class %}login-page{% endblock %}
+{% block body_class %}{% endblock %}
 
 {% block body %}
-<main id="main-content" class="login-card" role="main">
-    <div class="login-header">
-        <h1>Nissin Procurement</h1>
-        <p class="subtitle">Indirect Material Management System</p>
-    </div>
+<div class="demo-banner" role="region" aria-label="System status">
+    <strong>NISSIN WORKSPACE</strong> · Indirect Material Procurement &amp; Inventory Management
+</div>
 
-    {% if messages %}
-    <ul class="messages" role="alert">
-        {% for message in messages %}
-        <li class="message message-{{ message.tags }}">{{ message }}</li>
-        {% endfor %}
-    </ul>
-    {% endif %}
-
-    {% if form.non_field_errors %}
-    <div class="form-errors" role="alert">
-        <ul>
-            {% for error in form.non_field_errors %}
-            <li>{{ error }}</li>
-            {% endfor %}
-        </ul>
-    </div>
-    {% endif %}
-
-    <form method="post" action="{% url 'accounts:login' %}" novalidate>
-        {% csrf_token %}
-        {% if next %}
-        <input type="hidden" name="next" value="{{ next }}">
-        {% endif %}
-
-        <div class="form-group">
-            <label for="id_username" class="form-label">Username</label>
-            {{ form.username }}
-            {% if form.username.errors %}
-            <div class="field-errors" role="alert">
-                {% for error in form.username.errors %}
-                <p>{{ error }}</p>
-                {% endfor %}
+<div class="login-shell">
+    <!-- Left Hero Panel (Visual reference styling) -->
+    <aside class="login-aside" aria-label="Workspace Introduction">
+        <div class="identity">
+            <div class="mark-wrapper">
+                <img src="{% static 'images/nissin-workspace-mark.svg' %}" alt="" class="mark-img" width="38" height="38">
             </div>
-            {% endif %}
+            <div class="brand-text">
+                NISSIN<span>INDIRECT MATERIALS</span>
+            </div>
         </div>
 
-        <div class="form-group">
-            <label for="id_password" class="form-label">Password</label>
-            <div class="password-wrapper">
-                {{ form.password }}
-                <button type="button"
-                        class="password-toggle"
-                        aria-label="Show password"
-                        onclick="togglePassword(this)">
-                    Show
+        <div class="aside-copy">
+            <div class="eyebrow">Procurement &amp; Inventory</div>
+            <h1>Everything your team needs to move work forward.</h1>
+            <p>A clearer view of material requests, procurement activities, and inventory records in one unified workspace.</p>
+        </div>
+
+        <div class="aside-meta">
+            Internal workspace · Designed for everyday operations
+        </div>
+    </aside>
+
+    <!-- Right Login Form Area -->
+    <div class="login-area">
+        <main id="main-content" class="login-card" role="main">
+            <div class="label-top">Welcome back</div>
+            <h2>Sign in to your account</h2>
+            <p class="subtle">Use your assigned account to access your workspace.</p>
+
+            {% if messages %}
+            <ul class="messages" role="alert">
+                {% for message in messages %}
+                <li class="message message-{{ message.tags }}">{{ message }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+
+            {% if form.non_field_errors %}
+            <div class="form-errors" role="alert">
+                <ul>
+                    {% for error in form.non_field_errors %}
+                    <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+
+            <form class="login-form" method="post" action="{% url 'accounts:login' %}" novalidate>
+                {% csrf_token %}
+                {% if next %}
+                <input type="hidden" name="next" value="{{ next }}">
+                {% endif %}
+
+                <div class="field">
+                    <label for="id_username">Username</label>
+                    {{ form.username }}
+                    {% if form.username.errors %}
+                    <div class="field-errors" role="alert">
+                        {% for error in form.username.errors %}
+                        <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="field">
+                    <label for="id_password">Password</label>
+                    <div class="input-wrap">
+                        {{ form.password }}
+                        <button type="button"
+                                class="show-pass"
+                                id="showPassword"
+                                aria-label="Show password"
+                                aria-pressed="false"
+                                onclick="togglePassword(this)">
+                            Show
+                        </button>
+                    </div>
+                    {% if form.password.errors %}
+                    <div class="field-errors" role="alert">
+                        {% for error in form.password.errors %}
+                        <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <button class="button primary full" type="submit">
+                    Sign In <span aria-hidden="true">&rarr;</span>
                 </button>
-            </div>
-            {% if form.password.errors %}
-            <div class="field-errors" role="alert">
-                {% for error in form.password.errors %}
-                <p>{{ error }}</p>
-                {% endfor %}
-            </div>
-            {% endif %}
-        </div>
 
-        <button type="submit" class="btn btn-primary btn-block">Sign In</button>
-    </form>
+                <p class="form-help">
+                    Need an account? Contact your system administrator.
+                </p>
+            </form>
 
-    <div class="contact-admin">
-        Need an account? Contact your system administrator.
+            <div class="footnote">
+                Authorized access only. All authentication and role activities are logged in accordance with company audit policy.
+            </div>
+        </main>
     </div>
-</main>
+</div>
 {% endblock %}
 
 {% block extra_js %}
 <script>
 function togglePassword(btn) {
-    const wrapper = btn.closest('.password-wrapper');
-    const input = wrapper.querySelector('input');
-    if (input.type === 'password') {
-        input.type = 'text';
-        btn.textContent = 'Hide';
-        btn.setAttribute('aria-label', 'Hide password');
-    } else {
-        input.type = 'password';
-        btn.textContent = 'Show';
-        btn.setAttribute('aria-label', 'Show password');
-    }
+    const input = document.getElementById('id_password');
+    if (!input) return;
+    const isVisible = input.type === 'text';
+    input.type = isVisible ? 'password' : 'text';
+    btn.textContent = isVisible ? 'Show' : 'Hide';
+    btn.setAttribute('aria-label', isVisible ? 'Show password' : 'Hide password');
+    btn.setAttribute('aria-pressed', String(!isVisible));
 }
 </script>
 {% endblock %}
