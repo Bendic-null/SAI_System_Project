@@ -1,0 +1,180 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Home — Nissin Procurement{% endblock %}
+{% block body_class %}{% endblock %}
+
+{% block body %}
+<div class="app-shell">
+    <!-- Sidebar -->
+    <aside class="app-sidebar" id="sidebar" role="navigation" aria-label="Main navigation">
+        <div class="sidebar-header">
+            <h2>Nissin Procurement</h2>
+            <span class="sidebar-subtitle">Indirect Material System</span>
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="nav-section-title">Navigation</div>
+            <a href="{% url 'accounts:home' %}" class="nav-link active">
+                <span class="nav-icon">🏠</span>
+                Home
+            </a>
+
+            {% if available_roles %}
+            <div class="nav-section-title">Your Workspaces</div>
+            {% for role in available_roles %}
+            <a href="{% url 'accounts:workspace' role.slug %}" class="nav-link">
+                <span class="nav-icon">📋</span>
+                {{ role.display }}
+                {% if 'Future' in role.phase_status %}
+                <span class="nav-badge">Future</span>
+                {% endif %}
+            </a>
+            {% endfor %}
+            {% endif %}
+
+            {% if is_admin %}
+            <div class="nav-section-title">Administration</div>
+            <a href="{% url 'admin:index' %}" class="nav-link">
+                <span class="nav-icon">⚙️</span>
+                Django Admin
+            </a>
+            {% endif %}
+
+            <div class="nav-section-title">Account</div>
+            <a href="{% url 'accounts:password_change' %}" class="nav-link">
+                <span class="nav-icon">🔑</span>
+                Change Password
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="sidebar-user">
+                <div class="user-avatar" aria-hidden="true">
+                    {{ display_name|truncatechars:1 }}
+                </div>
+                <div class="user-info">
+                    <div class="user-name">{{ display_name }}</div>
+                    <div class="user-role-label">
+                        {% if available_roles %}
+                            {{ available_roles.0.display }}{% if available_roles|length > 1 %} +{{ available_roles|length|add:"-1" }}{% endif %}
+                        {% elif is_admin %}
+                            Administrator
+                        {% else %}
+                            No role assigned
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="sidebar-actions">
+                <a href="{% url 'accounts:password_change' %}" class="sidebar-action-link">Settings</a>
+                <form method="post" action="{% url 'accounts:logout' %}" style="flex:1;display:flex;">
+                    {% csrf_token %}
+                    <button type="submit" class="sidebar-action-link" style="width:100%;color:#fc8181;">
+                        Sign Out
+                    </button>
+                </form>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Mobile overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+    <!-- Main content -->
+    <div class="app-main">
+        <header class="app-topbar">
+            <button class="mobile-menu-btn" onclick="toggleSidebar()" aria-label="Toggle menu">
+                ☰
+            </button>
+            <span class="topbar-title">Home</span>
+            <div></div>
+        </header>
+
+        <main id="main-content" class="app-content">
+            {% if messages %}
+            <ul class="messages" role="alert">
+                {% for message in messages %}
+                <li class="message message-{{ message.tags }}">{{ message }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+
+            <div class="card" style="margin-bottom:1.5rem;">
+                <div class="card-body">
+                    <h2 style="font-size:1.25rem;margin-bottom:0.25rem;">
+                        Welcome, {{ display_name }}
+                    </h2>
+                    <p style="color:var(--color-text-light);font-size:0.875rem;">
+                        Nissin Indirect Material Procurement & Inventory Management System
+                    </p>
+                </div>
+            </div>
+
+            {% if has_roles %}
+            <h3 style="font-size:1rem;margin-bottom:0.75rem;">Your Workspaces</h3>
+            <div class="role-grid">
+                {% for role in available_roles %}
+                <a href="{% url 'accounts:workspace' role.slug %}" class="role-card" style="text-decoration:none;color:inherit;">
+                    <h4>{{ role.display }}</h4>
+                    <p>{{ role.description }}</p>
+                    <span class="phase-badge {% if 'Active' in role.phase_status %}active{% endif %}">
+                        {{ role.phase_status }}
+                    </span>
+                </a>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="card">
+                <div class="card-body">
+                    <div class="empty-state">
+                        <div class="empty-icon">📭</div>
+                        <h3>No Operational Roles Assigned</h3>
+                        <p>
+                            You do not currently have any operational roles assigned.
+                            Contact your system administrator to request access to the
+                            appropriate workspace for your responsibilities.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            {% if is_admin %}
+            <div class="card" style="margin-top:1.5rem;">
+                <div class="card-header">
+                    <h3>Administration</h3>
+                </div>
+                <div class="card-body">
+                    <p style="font-size:0.875rem;color:var(--color-text-light);margin-bottom:0.75rem;">
+                        You have administrative access. Use Django Admin to manage users and roles.
+                    </p>
+                    <p style="font-size:0.8125rem;color:var(--color-text-muted);margin-bottom:1rem;">
+                        Note: Administrative access and operational role assignments are separate.
+                        Being an administrator does not automatically grant access to operational
+                        role workspaces. Assign yourself to specific role groups if you need
+                        to access their workspaces.
+                    </p>
+                    <a href="{% url 'admin:index' %}" class="btn btn-secondary btn-sm">
+                        Open Admin Panel
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+        </main>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function toggleSidebar() {
+    document.getElementById('sidebar').classList.toggle('open');
+    document.getElementById('sidebarOverlay').classList.toggle('active');
+}
+function closeSidebar() {
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('sidebarOverlay').classList.remove('active');
+}
+</script>
+{% endblock %}

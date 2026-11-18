@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ role_display }} — Nissin Procurement{% endblock %}
+
+{% block body %}
+<div class="app-shell">
+    <!-- Sidebar -->
+    <aside class="app-sidebar" id="sidebar" role="navigation" aria-label="Main navigation">
+        <div class="sidebar-header">
+            <h2>Nissin Procurement</h2>
+            <span class="sidebar-subtitle">Indirect Material System</span>
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="nav-section-title">Navigation</div>
+            <a href="{% url 'accounts:home' %}" class="nav-link">
+                <span class="nav-icon">🏠</span>
+                Home
+            </a>
+
+            <div class="nav-section-title">Current Workspace</div>
+            <a href="{% url 'accounts:workspace' role_slug %}" class="nav-link active">
+                <span class="nav-icon">📋</span>
+                {{ role_display }}
+            </a>
+
+            <div class="nav-section-title">Account</div>
+            <a href="{% url 'accounts:password_change' %}" class="nav-link">
+                <span class="nav-icon">🔑</span>
+                Change Password
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="sidebar-actions">
+                <a href="{% url 'accounts:home' %}" class="sidebar-action-link">Home</a>
+                <form method="post" action="{% url 'accounts:logout' %}" style="flex:1;display:flex;">
+                    {% csrf_token %}
+                    <button type="submit" class="sidebar-action-link" style="width:100%;color:#fc8181;">
+                        Sign Out
+                    </button>
+                </form>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Mobile overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+    <!-- Main content -->
+    <div class="app-main">
+        <header class="app-topbar">
+            <button class="mobile-menu-btn" onclick="toggleSidebar()" aria-label="Toggle menu">
+                ☰
+            </button>
+            <span class="topbar-title">{{ role_display }}</span>
+            <div></div>
+        </header>
+
+        <main id="main-content" class="app-content">
+            <div class="workspace-header">
+                <h1>{{ role_display }}</h1>
+                <p>{{ role_description }}</p>
+            </div>
+
+            <div class="workspace-status">
+                <strong>Current Phase Status:</strong> {{ phase_status }}
+            </div>
+
+            <div class="card" style="margin-top:1.5rem;">
+                <div class="card-body">
+                    <div class="empty-state">
+                        <div class="empty-icon">🚧</div>
+                        <h3>Future Module</h3>
+                        <p>
+                            This workspace is a placeholder for future operational
+                            functionality. No procurement, inventory, or approval
+                            actions are available in this phase.
+                        </p>
+                        <a href="{% url 'accounts:home' %}" class="btn btn-secondary btn-sm" style="margin-top:1rem;">
+                            ← Back to Home
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function toggleSidebar() {
+    document.getElementById('sidebar').classList.toggle('open');
+    document.getElementById('sidebarOverlay').classList.toggle('active');
+}
+function closeSidebar() {
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('sidebarOverlay').classList.remove('active');
+}
+</script>
+{% endblock %}
